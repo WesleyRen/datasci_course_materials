@@ -1,0 +1,27 @@
+Problem: 
+"
+Failed Jobs:
+JobId Alias Feature Message Outputs
+job_201408060540_0004 count_by_object,ntriples,objects,raw  GROUP_BY,COMBINER Message: Job failed! Error - # of failed Map Tasks exceeded allowed limit. FailedCount: 1. LastFailedTask: task_201408060540_0004_m_000025  
+
+Input(s):
+Failed to read data from "s3n://uw-cse-344-oregon.aws.amazon.com/btc-2010-chunk-000"
+"
+
+Answer:
+"
+I met this problem even after I moved my cluster to Oregon the same region with the S3 bucket.
+
+Here's my work around
+
+** copy raw data to your EC2 instance, then, upload to local HDFS
+
+wget http://uw-cse-344-oregon.aws.amazon.com.s3.amazonaws.com/btc-2010-chunk-000
+
+hadoop fs -copyFromLocal btc-2010-chunk-000 /user/hadoop/2gdata
+** modify pig script to load from HDFS, that's:
+
+raw = LOAD '/user/hadoop/2gdata' USING TextLoader as (line:chararray);
+And finally, the task successfully finished :D
+Successfully read 10000000 records (53334345 bytes) from: "/user/hadoop/2gdata"
+"
